@@ -152,3 +152,11 @@ References:
 References:
 
 - [Easy Node Authentication](https://github.com/scotch-io/easy-node-authentication)
+
+
+https://github.com/auth0-blog/nodejs-jwt-authentication-sample
+https://github.com/auth0-blog/angular2-authentication-sample
+
+
+*** https://github.com/CuppaLabs/angular2-social-login
+*** https://github.com/nitishvu/angular2-login-seed/
