@@ -1,3 +1,4 @@
+import { AuthService } from '../services/auth.service';
 import { NgModule, Type } from '@angular/core';
 import { BrowserModule, Title }  from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -74,6 +75,7 @@ const httpInterceptorProviders: Type<any>[] = [
     appRoutingProviders,
     httpInterceptorProviders,
     Title,
+    AuthService
   ], // additional providers needed for this module
   entryComponents: [ ],
   bootstrap: [ AppComponent ],
