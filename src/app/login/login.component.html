@@ -6,14 +6,25 @@
     <div layout-gt-xs="row" layout-align-gt-xs="center start" class="margin">
       <div flex-gt-xs="50">
         <md-card tdMediaToggle="gt-xs" [mediaClasses]="['push-top-lg']">
-          <md-card-title><md-icon class="md-icon-logo" svgIcon="assets:covalent"></md-icon> Login</md-card-title>
+          <md-card-title>
+            <md-icon class="md-icon-logo" svgIcon="assets:covalent"></md-icon> Login</md-card-title>
           <md-card-subtitle>sign in via your current corporate account</md-card-subtitle>
           <md-divider></md-divider>
           <md-card-content>
+                <button (click)="googleLogin()" class="btn btn-block btn-social btn-google">
+                    <span class="fa fa-google"></span> Sign in with Google
+                </button>
+                <button (click)="facebookLogin()" class="btn btn-block btn-social btn-facebook">
+                    <span class="fa fa-facebook"></span> Sign in with Facebook
+                </button>
+                <button (click)="linkedinLogin()" class="btn btn-block btn-social btn-linkedin">
+                    <span class="fa fa-linkedin"></span> Sign in with LinkedIn
+                </button>
             <form #loginForm="ngForm">
               <div layout="row">
-                <md-input-container flex> 
-                  <input mdInput #userElement #userControl="ngModel" placeholder="Username" type="text" maxlength="30" name="username" [(ngModel)]="username" required>
+                <md-input-container flex>
+                  <input mdInput #userElement #userControl="ngModel" placeholder="Username" type="text" maxlength="30" name="username" [(ngModel)]="username"
+                    required>
                   <span md-prefix><md-icon>person</md-icon></span>
                   <md-hint align="start">
                     <span [hidden]="!userControl.errors?.required || userControl.pristine" class="tc-red-600">Required</span>
@@ -22,8 +33,9 @@
                 </md-input-container>
               </div>
               <div layout="row">
-                <md-input-container flex> 
-                  <input mdInput #passElement #passControl="ngModel" placeholder="Password" type="password" name="password" [(ngModel)]="password" required>
+                <md-input-container flex>
+                  <input mdInput #passElement #passControl="ngModel" placeholder="Password" type="password" name="password" [(ngModel)]="password"
+                    required>
                   <span md-prefix><md-icon>lock</md-icon></span>
                   <md-hint align="start">
                     <span [hidden]="!passControl.errors?.required || passControl.pristine" class="tc-red-600">Required</span>
@@ -39,6 +51,6 @@
           </md-card-actions>
         </md-card>
       </div>
-    </div>    
+    </div>
   </div>
 </div>
