@@ -177,3 +177,8 @@ In the menu select **Credentials** then create new **OAuth Client ID** credentia
 Configure consent screen
 
 Choose Web Application
+
+
+
+
+https://github.com/auth0/express-jwt
