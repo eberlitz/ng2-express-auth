@@ -1,6 +1,6 @@
 import { AuthService } from '../services/auth.service';
 import { NgModule, Type } from '@angular/core';
-import { BrowserModule, Title }  from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CovalentCoreModule } from '@covalent/core';
@@ -33,51 +33,51 @@ import { RequestInterceptor } from '../config/interceptors/request.interceptor';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 const httpInterceptorProviders: Type<any>[] = [
-  RequestInterceptor,
+    RequestInterceptor,
 ];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    MainComponent,
-    DashboardComponent,
-    DashboardProductComponent,
-    ProductOverviewComponent,
-    ProductStatsComponent,
-    ProductFeaturesComponent,
-    FeaturesFormComponent,
-    UsersComponent,
-    UsersFormComponent,
-    LogsComponent,
-    FormComponent,
-    DetailComponent,
-    LoginComponent,
-    TemplatesComponent,
-    DashboardTemplateComponent,
-    EmailTemplateComponent,
-    EditorTemplateComponent,
-  ], // directives, components, and pipes owned by this NgModule
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    CovalentCoreModule,
-    CovalentHttpModule.forRoot({
-      interceptors: [{
-        interceptor: RequestInterceptor, paths: ['**'],
-      }],
-    }),
-    CovalentHighlightModule,
-    CovalentMarkdownModule,
-    appRoutes,
-    NgxChartsModule,
-  ], // modules needed to run this module
-  providers: [
-    appRoutingProviders,
-    httpInterceptorProviders,
-    Title,
-    AuthService
-  ], // additional providers needed for this module
-  entryComponents: [ ],
-  bootstrap: [ AppComponent ],
+    declarations: [
+        AppComponent,
+        MainComponent,
+        DashboardComponent,
+        DashboardProductComponent,
+        ProductOverviewComponent,
+        ProductStatsComponent,
+        ProductFeaturesComponent,
+        FeaturesFormComponent,
+        UsersComponent,
+        UsersFormComponent,
+        LogsComponent,
+        FormComponent,
+        DetailComponent,
+        LoginComponent,
+        TemplatesComponent,
+        DashboardTemplateComponent,
+        EmailTemplateComponent,
+        EditorTemplateComponent,
+    ], // directives, components, and pipes owned by this NgModule
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        CovalentCoreModule,
+        CovalentHttpModule.forRoot({
+            interceptors: [{
+                interceptor: RequestInterceptor, paths: ['**'],
+            }],
+        }),
+        CovalentHighlightModule,
+        CovalentMarkdownModule,
+        appRoutes,
+        NgxChartsModule,
+    ], // modules needed to run this module
+    providers: [
+        appRoutingProviders,
+        httpInterceptorProviders,
+        Title,
+        AuthService
+    ], // additional providers needed for this module
+    entryComponents: [],
+    bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
