@@ -160,3 +160,20 @@ https://github.com/auth0-blog/angular2-authentication-sample
 
 *** https://github.com/CuppaLabs/angular2-social-login
 *** https://github.com/nitishvu/angular2-login-seed/
+
+
+
+
+# 3.2 Google Authentication
+
+Go to https://console.developers.google.com/
+
+Create a new project
+
+Enable 'Google+ API'
+
+In the menu select **Credentials** then create new **OAuth Client ID** credentials
+
+Configure consent screen
+
+Choose Web Application

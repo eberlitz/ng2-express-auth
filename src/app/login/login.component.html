@@ -11,15 +11,13 @@
                     <md-card-subtitle>sign in via your current corporate account</md-card-subtitle>
                     <md-divider></md-divider>
                     <md-card-content>
-                        <button (click)="googleLogin()" class="btn btn-block btn-social btn-google">
-                    <span class="fa fa-google"></span> Sign in with Google
-                </button>
-                        <button (click)="facebookLogin()" class="btn btn-block btn-social btn-facebook">
-                    <span class="fa fa-facebook"></span> Sign in with Facebook
-                </button>
-                        <button (click)="linkedinLogin()" class="btn btn-block btn-social btn-linkedin">
-                    <span class="fa fa-linkedin"></span> Sign in with LinkedIn
-                </button>
+                        <button flex md-raised-button (click)="googleLogin()" class="btn-social btn-google">
+                            <span class="fa fa-google"></span> Sign in with Google
+                        </button>
+                        <button flex md-raised-button (click)="facebookLogin()" class="btn-social btn-facebook">
+                            <span class="fa fa-facebook"></span> Sign in with Facebook
+                        </button>
+
                         <form #loginForm="ngForm">
                             <div layout="row">
                                 <md-input-container flex>

@@ -28,10 +28,6 @@ export class LoginComponent {
             this._loadingService.resolve();
         }, 2000);
     }
-
-    linkedinLogin() {
-        this.authService.auth('linkedin');
-    }
     facebookLogin() {
         this.authService.auth('facebook');
     }

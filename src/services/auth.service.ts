@@ -14,7 +14,7 @@ export class AuthService implements CanActivate {
             authEndpoint: '~/auth/facebook'
         },
         google: {
-            clientId: '',
+            clientId: '275614897413-gk527ivpf1sg22mjlecvpjnek23dv9dv.apps.googleusercontent.com',
             redirectURI: 'http://localhost:4200/',
             authEndpoint: '~/auth/google'
         }
@@ -80,7 +80,7 @@ export class AuthService implements CanActivate {
                 const provider = this.authConfig[providerId];
                 const body = { 'code': this.code, 'clientId': provider.clientId, 'redirectUri': provider.redirectURI };
                 // this._http.post(provider.authEndpoint, body, {})
-
+                console.log('dologin', body);
                 localStorage.setItem('token', 'express-jwt-token-here');
                 resolve(true);
             }
