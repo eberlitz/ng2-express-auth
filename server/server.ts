@@ -1,9 +1,25 @@
+import { config } from './config';
 import express = require('express');
 import path = require('path');
 import http = require('http');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 // const session = require('express-session');
 // const passport = require('passport');
+
+import mongoose = require('mongoose');
+import bluebird = require('bluebird');
+
+// set Promise provider to bluebird
+mongoose.Promise = bluebird;
+
+// connect to our database
+mongoose.connect(config.db.connection);
+const db = mongoose.connection;
+db.on('error', () => {
+    throw new Error('unable to connect to database at ' + config.db);
+});
+
 
 // Get our API routes
 const api = require('./routes/api');
@@ -12,7 +28,7 @@ const auth = require('./routes/auth');
 // Configura o passport
 // require('./config/passport')(passport);
 const app = express();
-
+app.use(cors());
 // Parsers for POST data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,98 +37,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 
 
-// required for passport
-// app.use(require('express-session')({
-//   secret: 'keyboard cat',
-//   resave: true,
-//   saveUninitialized: true
-// }));
-// app.use(passport.initialize());
-// app.use(passport.session()); // persistent login sessions
-
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
-        return next();
-    // if they aren't redirect them to the home page
-    res.redirect('/');
-}
+// Setup Authorization
+import jwtExpress = require('express-jwt');
+api.use(jwtExpress({ secret: config.jwt_secret }));
 
 // Set our api routes
 app.use('/api', api);
-
 app.use('/auth', auth);
-
-// -----------------------------------------------------
-
-// facebook -------------------------------
-
-// send to facebook to do the authentication
-// app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
-
-// // handle the callback after facebook has authenticated the user
-// app.get('/auth/facebook/callback',
-//     passport.authenticate('facebook', {
-//         successRedirect: '/profile',
-//         failureRedirect: '/'
-//     }));
-
-// facebook -------------------------------
-
-// send to facebook to do the authentication
-// router.get('/connect/facebook', passport.authorize('facebook', { scope: 'email' }));
-
-// // handle the callback after facebook has authorized the user
-// router.get('/connect/facebook/callback',
-//     passport.authorize('facebook', {
-//         successRedirect: '/profile',
-//         failureRedirect: '/'
-//     }));
-
-// google ---------------------------------
-
-// send to google to do the authentication
-// app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-// // the callback after google has authenticated the user
-// app.get('/auth/google/callback',
-//     passport.authenticate('google', {
-//         successRedirect: '/profile',
-//         failureRedirect: '/'
-//     }));
-
-// google ---------------------------------
-
-// send to google to do the authentication
-// app.get('/connect/google', passport.authorize('google', { scope: ['profile', 'email'] }));
-
-// // the callback after google has authorized the user
-// app.get('/connect/google/callback',
-//     passport.authorize('google', {
-//         successRedirect: '/profile',
-//         failureRedirect: '/'
-//     }));
-
-
-// facebook -------------------------------
-// app.get('/unlink/facebook', function (req, res) {
-//     const user = req.user;
-//     user.facebook.token = undefined;
-//     user.save(function (err) {
-//         res.redirect('/profile');
-//     });
-// });
-
-// // google ---------------------------------
-// app.get('/unlink/google', function (req, res) {
-//     const user = req.user;
-//     user.google.token = undefined;
-//     user.save(function (err) {
-//         res.redirect('/profile');
-//     });
-// });
-// ------------------------------------------------------
 
 // Catch all other routes and return the index file
 app.get('*', (req, res) => {

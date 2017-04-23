@@ -1,6 +1,5 @@
-require('dotenv').config({ silent: true });
-
 export const config = {
+    jwt_secret: process.env.JWT_SECRET,
     GOOGLE: {
         SECRET: process.env.GOOGLE_SECRET
     },
