@@ -1,14 +1,16 @@
-import { config } from './config';
-import express = require('express');
 import path = require('path');
 import http = require('http');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-// const session = require('express-session');
-// const passport = require('passport');
 
+import express = require('express');
+import jwt = require('express-jwt');
 import mongoose = require('mongoose');
 import bluebird = require('bluebird');
+
+import { config } from './config';
+
+
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 // set Promise provider to bluebird
 mongoose.Promise = bluebird;
@@ -20,13 +22,10 @@ db.on('error', () => {
     throw new Error('unable to connect to database at ' + config.db);
 });
 
-
 // Get our API routes
 const api = require('./routes/api');
 const auth = require('./routes/auth');
 
-// Configura o passport
-// require('./config/passport')(passport);
 const app = express();
 app.use(cors());
 // Parsers for POST data
@@ -37,12 +36,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname, '..', 'dist')));
 
 
-// Setup Authorization
-import jwtExpress = require('express-jwt');
-api.use(jwtExpress({ secret: config.jwt_secret }));
-
 // Set our api routes
-app.use('/api', api);
+app.use('/api', jwt({ secret: config.jwt_secret }) , api);
 app.use('/auth', auth);
 
 // Catch all other routes and return the index file
