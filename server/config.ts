@@ -3,6 +3,9 @@ export const config = {
     GOOGLE: {
         SECRET: process.env.GOOGLE_SECRET
     },
+    FACEBOOK: {
+        SECRET: process.env.FACEBOOK_SECRET
+    },
     db: {
         connection: process.env.DATABASE
     }

@@ -13,12 +13,12 @@ export class AuthService implements CanActivate {
         facebook: {
             clientId: '285582655231533',
             redirectURI: 'http://localhost:4200/',
-            authEndpoint: 'http://localhost:4200/auth/facebook',
+            authEndpoint: '~/auth/facebook',
         },
         google: {
             clientId: '275614897413-gk527ivpf1sg22mjlecvpjnek23dv9dv.apps.googleusercontent.com',
             redirectURI: 'http://localhost:4200/',
-            authEndpoint: 'http://localhost:4200/auth/google',
+            authEndpoint: '~/auth/google',
         },
     };
 

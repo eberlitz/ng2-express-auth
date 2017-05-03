@@ -73,63 +73,54 @@ router.post('/google', async (req: express.Request, res: express.Response, next:
  | Login with Facebook
  |--------------------------------------------------------------------------
  */
-// router.post('/auth/facebook', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-//     const fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name', 'picture.type(large)'];
-//     const accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
-//     const graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
-//     const params = {
-//         code: req.body.code,
-//         client_id: req.body.clientId,
-//         client_secret: config.FACEBOOK_SECRET,
-//         redirect_uri: req.body.redirectUri
-//     };
+router.post('/facebook', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 
-//     // Step 1. Exchange authorization code for access token.
-//     request.get({ url: accessTokenUrl, qs: params, json: true }, function (err, response, accessToken) {
-//         if (response.statusCode !== 200) {
-//             return res.status(500).send({ message: accessToken.error.message });
-//         }
+    try {
+        const fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name', 'picture.type(large)'];
+        const accessTokenUrl = 'https://graph.facebook.com/v2,8/oauth/access_token';
+        const graphApiUrl = 'https://graph.facebook.com/v2,8/me?fields=' + fields.join(',');
+        const params = {
+            code: req.body.code,
+            client_id: req.body.clientId,
+            client_secret: config.FACEBOOK.SECRET,
+            redirect_uri: req.body.redirectUri
+        };
 
-//         // Step 2. Retrieve profile information about the current user.
-//         request.get({ url: graphApiUrl, qs: accessToken, json: true }, function (err, response, profile) {
-//             if (response.statusCode !== 200) {
-//                 return res.status(500).send({ message: profile.error.message });
-//             }
-//             User.findOne({ email: profile.email }, function (err, existingUser) {
-//                 if (existingUser && existingUser.provider == 'facebook') {
-//                     const token = createJWT(existingUser);
-//                     res.send({ token: token });
-//                 }
-//                 else if (existingUser && existingUser.provider != 'facebook') {
-//                     const user = {};
-//                     user.provider_id = profile.id;
-//                     user.provider = 'facebook';
-//                     user.email = profile.email;
-//                     user.picture = profile.picture.data.url;
-//                     user.displayName = profile.name;
-//                     User.findOneAndUpdate({ email: existingUser.email }, user, function (err) {
-//                         const token = createJWT(existingUser);
-//                         res.send({ token: token });
-//                     });
-//                 }
-//                 else {
-//                     const user = new User();
-//                     user.provider_id = profile.id;
-//                     user.provider = 'facebook';
-//                     user.email = profile.email;
-//                     user.picture = profile.picture.data.url;
-//                     user.displayName = profile.name;
-//                     user.save(function (err) {
-//                         const token = createJWT(user);
-//                         res.send({ token: token });
-//                     });
-//                 }
-//                 // var token = req.header('Authorization').split(' ')[1];
-//                 // var payload = jwt.decode(token, config.TOKEN_SECRET);
-//             });
-//         });
-//     });
-// });
+        // Step 1. Exchange authorization code for access token.
+        const accessToken = await request.get({ url: accessTokenUrl, qs: params, json: true });
+        // if (response.statusCode !== 200) {
+        //     return res.status(500).send({ message: accessToken.error.message });
+        // }
+        // Step 2. Retrieve profile information about the current user.
+        const profile = await request.get({ url: graphApiUrl, qs: accessToken, json: true });
+        // if (response.statusCode !== 200) {
+        //     return res.status(500).send({ message: profile.error.message });
+        // }
+        let existingUser = await User.findOne({ 'facebook.id': profile.id });
+        if (existingUser) {
+            // if (!existingUser.facebook.token) {
+            //     existingUser.facebook.token = accessToken;
+            //     existingUser.facebook.name = profile.displayName;
+            //     existingUser.facebook.email = profile.email;
+            //     await existingUser.save();
+            // }
+        } else {
+            existingUser = new User();
+            existingUser.facebook = {
+                id: profile.id,
+                email: profile.email,
+                name: profile.name,
+                token: accessToken,
+                // picture = profile.picture.data.url;
+            };
+            await existingUser.save();
+        }
+        const token = createJWT(existingUser);
+        res.send({ access_token: token });
+    } catch (error) {
+        return next(error);
+    }
+});
 
 function createJWT(user: IUserSchema) {
     return jwt.sign({ id: user.id }, config.jwt_secret, { expiresIn: '30m' });
