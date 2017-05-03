@@ -1,8 +1,10 @@
 import { RoutesRecognized } from '@angular/router';
 import { provideRouterInitializer } from '@angular/router/src/router_module';
 import { Observable } from 'rxjs/Rx';
+import 'rxjs/add/operator/toPromise';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, Router } from '@angular/router';
 import { Injectable } from '@angular/core';
+import { HttpInterceptorService } from '@covalent/http';
 
 @Injectable()
 export class AuthService implements CanActivate {
@@ -11,18 +13,21 @@ export class AuthService implements CanActivate {
         facebook: {
             clientId: '285582655231533',
             redirectURI: 'http://localhost:4200/',
-            authEndpoint: '~/auth/facebook'
+            authEndpoint: 'http://localhost:4200/auth/facebook',
         },
         google: {
             clientId: '275614897413-gk527ivpf1sg22mjlecvpjnek23dv9dv.apps.googleusercontent.com',
             redirectURI: 'http://localhost:4200/',
-            authEndpoint: '~/auth/google'
-        }
+            authEndpoint: 'http://localhost:4200/auth/google',
+        },
     };
 
-    private code;
+    private code: string;
 
-    constructor(private router: Router) {
+    constructor(
+        private router: Router,
+        private _http: HttpInterceptorService,
+    ) {
         if (!this.code) {
             this.code = this.extractCode();
             if (this.code) {
@@ -37,7 +42,14 @@ export class AuthService implements CanActivate {
             this.router.navigate(['login']);
         }
         if (this.code) {
-            return this.loginProvider();
+            return this.loginProvider().then(() => {
+                this._http.get('http://localhost:4200/api/')
+                    .map((res) => res.json())
+                    .subscribe((res) => {
+                        console.log(res);
+                    });
+                return true;
+            });
         }
         return isLoggedIn;
     }
@@ -79,10 +91,12 @@ export class AuthService implements CanActivate {
                 // TODO: do login to your server
                 const provider = this.authConfig[providerId];
                 const body = { 'code': this.code, 'clientId': provider.clientId, 'redirectUri': provider.redirectURI };
-                // this._http.post(provider.authEndpoint, body, {})
-                console.log('dologin', body);
-                localStorage.setItem('token', 'express-jwt-token-here');
-                resolve(true);
+                this._http.post(provider.authEndpoint, body, {})
+                    .map((res) => res.json())
+                    .subscribe((data) => {
+                        localStorage.setItem('token', data.access_token);
+                        resolve(true);
+                    }, reject);
             }
         });
     }
@@ -109,7 +123,7 @@ export class AuthService implements CanActivate {
                 // Prevent scrolling by storing the page's current scroll offset
                 const _scroll = {
                     top: document.body.scrollTop,
-                    left: document.body.scrollLeft
+                    left: document.body.scrollLeft,
                 };
                 window.location.hash = '';
                 // Restore the scroll offset, should be flicker free
