@@ -42,14 +42,15 @@ export class AuthService implements CanActivate {
             this.router.navigate(['login']);
         }
         if (this.code) {
-            return this.loginProvider().then(() => {
-                this._http.get('http://localhost:4200/api/')
-                    .map((res) => res.json())
-                    .subscribe((res) => {
-                        console.log(res);
-                    });
-                return true;
-            });
+            return this.loginProvider();
+            // .then(() => {
+            //     this._http.get('~/api/')
+            //         .map((res) => res.json())
+            //         .subscribe((res) => {
+            //             console.log(res);
+            //         });
+            //     return true;
+            // });
         }
         return isLoggedIn;
     }
@@ -102,7 +103,20 @@ export class AuthService implements CanActivate {
     }
 
     private isLoggedIn(): boolean {
-        return !!localStorage.getItem('token');
+        // Check if there's an unexpired JWT
+        let jwt = localStorage.getItem('token');
+        return !!jwt && !this.tokenNotExpired(jwt, 10);
+    }
+
+    private tokenNotExpired(jwt: string, offsetSeconds?: number) {
+        const jwtHelper = new JwtHelper();
+        let date = jwtHelper.getTokenExpirationDate(jwt);
+        offsetSeconds = offsetSeconds || 0;
+        if (date === null) {
+            return false;
+        }
+        // Token expired?
+        return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
     }
 
     private extractCode() {
@@ -131,5 +145,67 @@ export class AuthService implements CanActivate {
                 document.body.scrollLeft = _scroll.left;
             }
         }
+    }
+}
+
+// Avoid TS error "cannot find name escape"
+declare var escape: any;
+
+class JwtHelper {
+
+    public urlBase64Decode(str: string) {
+        let output = str.replace(/-/g, '+').replace(/_/g, '/');
+        switch (output.length % 4) {
+            case 0: { break; }
+            case 2: { output += '=='; break; }
+            case 3: { output += '='; break; }
+            default: {
+                throw new Error('Illegal base64url string!');
+            }
+        }
+        return decodeURIComponent(escape(typeof window === 'undefined'
+            ? atob(output)
+            : window.atob(output)));
+        // polyfill https://github.com/davidchambers/Base64.js
+    }
+
+    public decodeToken(token: string) {
+        let parts = token.split('.');
+
+        if (parts.length !== 3) {
+            throw new Error('JWT must have 3 parts');
+        }
+
+        let decoded = this.urlBase64Decode(parts[1]);
+        if (!decoded) {
+            throw new Error('Cannot decode the token');
+        }
+
+        return JSON.parse(decoded);
+    }
+
+    public getTokenExpirationDate(token: string) {
+        let decoded: any;
+        decoded = this.decodeToken(token);
+
+        if (typeof decoded.exp === 'undefined') {
+            return null;
+        }
+
+        let date = new Date(0); // The 0 here is the key, which sets the date to the epoch
+        date.setUTCSeconds(decoded.exp);
+
+        return date;
+    }
+
+    public isTokenExpired(token: string, offsetSeconds?: number) {
+        let date = this.getTokenExpirationDate(token);
+        offsetSeconds = offsetSeconds || 0;
+        if (date === null) {
+            return false;
+        }
+
+        // Token expired?
+        return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
     }
 }
